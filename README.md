@@ -10,6 +10,7 @@ This repo now contains a Next.js storefront starter built directly from the `MYL
 - Cart, checkout, contact, about, and order confirmation pages
 - LocalStorage cart behavior across the app
 - API routes for products, checkout quoting, Paystack initialization, and payment webhooks
+- File-backed order persistence for checkout records and payment status
 
 ## Run locally
 
@@ -33,6 +34,6 @@ If the Paystack key is missing, checkout will still work up to initialization an
 ## Recommended next steps
 
 1. Replace placeholder visuals with real brand photography and product images.
-2. Add order persistence, shipping rules by state, and a product/admin backend.
+2. Replace file-backed order storage with a database-backed model when you want multi-user durability.
 3. Replace placeholder visuals with real product imagery and launch copy.
 4. Add GA4, Meta Pixel, richer SEO metadata, and structured product data.

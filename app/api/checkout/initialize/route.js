@@ -6,6 +6,7 @@ import {
   createOrderReference,
   validateCustomer
 } from "@/lib/checkout";
+import { createOrder, updateOrderPaymentUrls } from "@/lib/orders";
 import { initializePaystackPayment } from "@/lib/payments";
 
 export async function POST(request) {
@@ -36,6 +37,14 @@ export async function POST(request) {
   };
 
   if (paymentMethod === "paystack") {
+    await createOrder({
+      reference,
+      paymentProvider: "paystack",
+      checkoutMethod: "paystack",
+      customer,
+      summary
+    });
+
     const result = await initializePaystackPayment({
       customer,
       amount: summary.total,
@@ -46,6 +55,10 @@ export async function POST(request) {
     if (!result.ok) {
       return NextResponse.json({ message: result.message }, { status: result.status || 500 });
     }
+
+    await updateOrderPaymentUrls(reference, {
+      paymentUrl: result.paymentUrl
+    });
 
     return NextResponse.json({
       ...result,
@@ -62,6 +75,15 @@ export async function POST(request) {
     items: summary.items,
     total: summary.total,
     reference
+  });
+
+  await createOrder({
+    reference,
+    paymentProvider: "manual",
+    checkoutMethod: "bank_transfer",
+    customer,
+    summary,
+    whatsappUrl
   });
 
   return NextResponse.json({

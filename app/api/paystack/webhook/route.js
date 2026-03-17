@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 import { NextResponse } from "next/server";
+import { markOrderFailed, markOrderPaid } from "@/lib/orders";
 
 export async function POST(request) {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -19,6 +20,16 @@ export async function POST(request) {
 
   const event = JSON.parse(rawBody);
   console.log("Paystack webhook received:", event.event, event.data?.reference);
+
+  const reference = event.data?.reference;
+
+  if (event.event === "charge.success" && reference) {
+    await markOrderPaid(reference);
+  }
+
+  if (event.event === "charge.failed" && reference) {
+    await markOrderFailed(reference);
+  }
 
   return NextResponse.json({ received: true });
 }
