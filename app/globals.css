@@ -150,6 +150,9 @@ button, input, select, textarea { font: inherit; }
 .checkout-form, .checkout-row { display: grid; gap: 14px; }
 .admin-orders { display: grid; gap: 18px; }
 .admin-order-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.admin-login-shell { max-width: 640px; }
+.admin-login-form { max-width: 420px; margin-top: 18px; }
+.admin-logout-form { margin-top: 18px; }
 .status-badge {
   display: inline-flex; padding: 8px 12px; border-radius: 999px; font-size: 0.82rem; text-transform: capitalize;
   border: 1px solid rgba(255,255,255,0.08);
