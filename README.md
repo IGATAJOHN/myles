@@ -35,6 +35,7 @@ BLOB_READ_WRITE_TOKEN=...
 
 If the Paystack key is missing, checkout will still work up to initialization and then return a setup error instead of silently failing.
 If `BLOB_READ_WRITE_TOKEN` is present, admin image uploads go to Vercel Blob. Without it, uploads fall back to the local `public/uploads/products` folder for local development.
+Prisma Client is generated automatically on install and before build so Vercel deployments stay in sync with the schema.
 
 ## Neon setup
 
