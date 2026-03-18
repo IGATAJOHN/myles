@@ -11,6 +11,7 @@ This repo now contains a Next.js storefront starter built directly from the `MYL
 - LocalStorage cart behavior across the app
 - API routes for products, checkout quoting, Paystack initialization, and payment webhooks
 - Prisma-based order persistence ready for Neon Postgres
+- Admin dashboard for orders, stock, pricing, and product image uploads
 
 ## Run locally
 
@@ -29,9 +30,11 @@ DATABASE_URL=postgresql://...
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 PAYSTACK_SECRET_KEY=...
 ADMIN_PASSWORD=...
+BLOB_READ_WRITE_TOKEN=...
 ```
 
 If the Paystack key is missing, checkout will still work up to initialization and then return a setup error instead of silently failing.
+If `BLOB_READ_WRITE_TOKEN` is present, admin image uploads go to Vercel Blob. Without it, uploads fall back to the local `public/uploads/products` folder for local development.
 
 ## Neon setup
 
@@ -48,6 +51,6 @@ This will create the order tables used by checkout and webhook updates.
 ## Recommended next steps
 
 1. Replace placeholder visuals with real brand photography and product images.
-2. Add Paystack server-side verification on the confirmation flow, not just webhook-driven status updates.
-3. Replace placeholder visuals with real product imagery and launch copy.
+2. Connect a custom domain in Vercel and mirror that URL in `NEXT_PUBLIC_SITE_URL`.
+3. Swap Paystack test keys for live keys only when you are ready to accept real payments.
 4. Add GA4, Meta Pixel, richer SEO metadata, and structured product data.
