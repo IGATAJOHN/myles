@@ -105,10 +105,17 @@ export default function ProductGrid({ products, enableFilters = false }) {
       <div className="product-grid">
         {visibleProducts.map((product) => {
           const isOutOfStock = product.stock === 0;
+          const imageStyle = product.imageUrl
+            ? {
+                backgroundImage: `linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5)), url(${product.imageUrl})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center"
+              }
+            : undefined;
 
           return (
             <article key={product.slug} className="product-card">
-              <div className="product-image">
+              <div className="product-image" style={imageStyle}>
                 <span>{product.tag}</span>
               </div>
               <div className="product-body">

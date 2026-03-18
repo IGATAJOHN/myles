@@ -1,4 +1,5 @@
 import { logoutAdmin } from "@/app/admin/actions";
+import AdminProductForm from "@/components/AdminProductForm";
 import { formatPrice } from "@/data/products";
 import { getInventoryProducts } from "@/lib/inventory";
 import { isAdminAuthenticated } from "@/lib/admin";
@@ -50,18 +51,12 @@ export default async function AdminOrdersPage() {
               <div className="admin-order-head">
                 <div>
                   <strong>Inventory Snapshot</strong>
-                  <p className="muted">Current sellable stock from the live database.</p>
+                  <p className="muted">Current sellable stock and product assets from the live database.</p>
                 </div>
               </div>
               <div className="inventory-grid">
                 {inventory.map((product) => (
-                  <div key={product.id} className="inventory-card">
-                    <strong>{product.name}</strong>
-                    <p className="muted">{product.slug}</p>
-                    <span className={`status-badge ${product.stock > 0 ? "status-paid" : "status-failed"}`}>
-                      {product.stock} left
-                    </span>
-                  </div>
+                  <AdminProductForm key={product.id} product={product} />
                 ))}
               </div>
             </article>

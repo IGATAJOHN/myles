@@ -15,9 +15,15 @@ export default async function ProductPage({ params }) {
       <section className="page-hero">
         <div className="container product-layout">
           <section className="gallery">
-            <div className="gallery-main">{product.name.replace("Myles Luxe - ", "")}</div>
+            <div className="gallery-main">
+              {product.imageUrl ? (
+                <img className="gallery-main-image" src={product.imageUrl} alt={product.name} />
+              ) : (
+                product.name.replace("Myles Luxe - ", "")
+              )}
+            </div>
             <div className="gallery-strip">
-              <div className="gallery-secondary">Front view</div>
+              <div className="gallery-secondary">{product.imageUrl ? "Uploaded asset" : "Front view"}</div>
               <div className="gallery-secondary">Folded display</div>
               <div className="gallery-secondary">Waistband close-up</div>
               <div className="gallery-secondary">Fabric texture</div>
