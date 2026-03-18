@@ -1,5 +1,6 @@
 import { logoutAdmin } from "@/app/admin/actions";
 import { formatPrice } from "@/data/products";
+import { getInventoryProducts } from "@/lib/inventory";
 import { isAdminAuthenticated } from "@/lib/admin";
 import { getRecentOrders } from "@/lib/orders";
 import { redirect } from "next/navigation";
@@ -18,10 +19,12 @@ export default async function AdminOrdersPage() {
   }
 
   let orders = [];
+  let inventory = [];
   let loadError = "";
 
   try {
     orders = await getRecentOrders();
+    inventory = await getInventoryProducts();
   } catch (error) {
     console.error("Admin orders load failed:", error);
     loadError = "The orders database is temporarily unavailable. Try again after the Neon project wakes up.";
@@ -42,6 +45,27 @@ export default async function AdminOrdersPage() {
       <section className="section">
         <div className="container admin-orders">
           {loadError ? <p className="form-error">{loadError}</p> : null}
+          {!loadError ? (
+            <article className="about-card">
+              <div className="admin-order-head">
+                <div>
+                  <strong>Inventory Snapshot</strong>
+                  <p className="muted">Current sellable stock from the live database.</p>
+                </div>
+              </div>
+              <div className="inventory-grid">
+                {inventory.map((product) => (
+                  <div key={product.id} className="inventory-card">
+                    <strong>{product.name}</strong>
+                    <p className="muted">{product.slug}</p>
+                    <span className={`status-badge ${product.stock > 0 ? "status-paid" : "status-failed"}`}>
+                      {product.stock} left
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ) : null}
           {orders.length ? (
             orders.map((order) => (
               <article key={order.id} className="about-card">

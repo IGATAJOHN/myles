@@ -6,6 +6,7 @@ import {
   createOrderReference,
   validateCustomer
 } from "@/lib/checkout";
+import { validateInventory } from "@/lib/inventory";
 import { createOrder, updateOrderPaymentUrls } from "@/lib/orders";
 import { initializePaystackPayment } from "@/lib/payments";
 
@@ -23,10 +24,23 @@ export async function POST(request) {
       );
     }
 
-    const summary = calculateCheckoutSummary(payload.items || [], customer.state);
-    if (!summary.items.length) {
+    const requestedSummary = calculateCheckoutSummary(payload.items || [], customer.state);
+    if (!requestedSummary.items.length) {
       return NextResponse.json({ message: "Cart is empty." }, { status: 400 });
     }
+
+    const inventory = await validateInventory(requestedSummary.items);
+    if (!inventory.valid) {
+      return NextResponse.json(
+        {
+          message: inventory.issues[0]?.message || "Some items are out of stock.",
+          issues: inventory.issues
+        },
+        { status: 409 }
+      );
+    }
+
+    const summary = calculateCheckoutSummary(inventory.items, customer.state);
 
     const reference = createOrderReference();
     const metadata = {

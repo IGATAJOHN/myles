@@ -1,7 +1,8 @@
 import crypto from "node:crypto";
 
 import { NextResponse } from "next/server";
-import { markOrderFailed, markOrderPaid } from "@/lib/orders";
+import { decrementStockForOrderItems } from "@/lib/inventory";
+import { getOrderByReference, getOrderItems, markOrderFailed, markOrderPaid } from "@/lib/orders";
 
 export async function POST(request) {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
@@ -24,7 +25,13 @@ export async function POST(request) {
   const reference = event.data?.reference;
 
   if (event.event === "charge.success" && reference) {
-    await markOrderPaid(reference);
+    const existingOrder = await getOrderByReference(reference);
+
+    if (existingOrder?.paymentStatus !== "paid") {
+      const orderItems = await getOrderItems(reference);
+      await decrementStockForOrderItems(orderItems);
+      await markOrderPaid(reference);
+    }
   }
 
   if (event.event === "charge.failed" && reference) {

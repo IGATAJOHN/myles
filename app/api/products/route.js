@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { products } from "@/data/products";
+import { getInventoryProducts } from "@/lib/inventory";
 
 export async function GET() {
+  const products = await getInventoryProducts();
   return NextResponse.json({ products });
 }
