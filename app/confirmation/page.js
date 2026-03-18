@@ -1,23 +1,48 @@
 import Link from "next/link";
-import { getOrderByReference } from "@/lib/orders";
+import ConfirmationClient from "@/components/ConfirmationClient";
+import { getOrderByReference, markOrderFailed, markOrderPaid, markOrderProcessing } from "@/lib/orders";
+import { verifyPaystackPayment } from "@/lib/payments";
 
 export const metadata = {
   title: "Order Confirmed | Myles Luxe"
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function ConfirmationPage({ searchParams }) {
   const reference = searchParams?.reference || "";
-  const order = await getOrderByReference(reference);
+  let order = await getOrderByReference(reference);
+
+  if (reference && order?.paymentProvider === "paystack" && order.paymentStatus !== "paid") {
+    const verification = await verifyPaystackPayment(reference);
+
+    if (verification.ok) {
+      if (verification.paymentStatus === "success") {
+        await markOrderPaid(reference);
+      } else if (verification.paymentStatus === "failed" || verification.paymentStatus === "abandoned") {
+        await markOrderFailed(reference);
+      } else {
+        await markOrderProcessing(reference);
+      }
+
+      order = await getOrderByReference(reference);
+    }
+  }
+
   const status = order?.paymentStatus || "pending";
   const headline =
     status === "paid"
       ? "Your Myles Luxe payment is confirmed."
+      : status === "processing"
+        ? "Your payment is being confirmed."
       : status === "failed"
         ? "Your payment did not go through."
         : "Your Myles Luxe order is being processed.";
   const copy =
     status === "paid"
       ? `Reference ${reference} has been marked paid. We can now fulfill the order.`
+      : status === "processing"
+        ? `Reference ${reference} is still being verified with Paystack. Refresh shortly if this does not update.`
       : status === "failed"
         ? `Reference ${reference} is marked failed. You can retry checkout or complete the order manually.`
         : reference
@@ -26,6 +51,7 @@ export default async function ConfirmationPage({ searchParams }) {
 
   return (
     <main className="page-hero">
+      <ConfirmationClient status={status} />
       <div className="container page-panel confirmation-box">
         <div className="eyebrow">Order Confirmation</div>
         <h1>{headline}</h1>

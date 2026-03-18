@@ -148,6 +148,15 @@ button, input, select, textarea { font: inherit; }
 .summary-stack { display: grid; gap: 10px; margin-bottom: 10px; }
 .checkout-grid { grid-template-columns: 1.25fr 0.75fr; align-items: start; }
 .checkout-form, .checkout-row { display: grid; gap: 14px; }
+.admin-orders { display: grid; gap: 18px; }
+.admin-order-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.status-badge {
+  display: inline-flex; padding: 8px 12px; border-radius: 999px; font-size: 0.82rem; text-transform: capitalize;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.status-pending, .status-processing { color: #e6c879; background: rgba(230,200,121,0.12); }
+.status-paid { color: #88c597; background: rgba(136,197,151,0.14); }
+.status-failed { color: #ffb4b4; background: rgba(255,180,180,0.12); }
 .form-error { color: #ffb4b4; margin: 0; }
 .form-note { color: #d8c38c; margin: 0; }
 .checkout-form button[disabled] { opacity: 0.7; cursor: wait; }
