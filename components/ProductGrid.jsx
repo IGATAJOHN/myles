@@ -9,6 +9,8 @@ import { formatPrice } from "@/data/products";
 function QuickViewModal({ product, onClose }) {
   if (!product) return null;
 
+  const isOutOfStock = product.stock === 0;
+
   return (
     <div className="modal open" onClick={onClose}>
       <div className="modal-card" onClick={(event) => event.stopPropagation()}>
@@ -17,11 +19,11 @@ function QuickViewModal({ product, onClose }) {
           <div className="modal-body">
             <div className="modal-head">
               <div>
-                <div className="badge">{product.tag}</div>
+                <div className={`badge ${isOutOfStock ? "badge-out" : ""}`}>{product.tag}</div>
                 <h3>{product.name}</h3>
               </div>
               <button className="close-button" type="button" onClick={onClose}>
-                ×
+                x
               </button>
             </div>
             <p className="section-copy">
@@ -39,6 +41,7 @@ function QuickViewModal({ product, onClose }) {
               <button
                 className="button-secondary"
                 type="button"
+                disabled={isOutOfStock}
                 onClick={() =>
                   addCartItem({
                     slug: product.slug,
@@ -49,7 +52,7 @@ function QuickViewModal({ product, onClose }) {
                   })
                 }
               >
-                Add to Cart
+                {isOutOfStock ? "Sold Out" : "Add to Cart"}
               </button>
               <Link className="ghost-button" href={`/product/${product.slug}`}>
                 View Product Page
@@ -92,50 +95,57 @@ export default function ProductGrid({ products, enableFilters = false }) {
           <div className="filter-item">
             <select value={priceFilter} onChange={(event) => setPriceFilter(event.target.value)}>
               <option value="all">All prices</option>
-              <option value="12000">₦12,000 and below</option>
-              <option value="15000">₦15,000 premium sets</option>
+              <option value="12000">N12,000 and below</option>
+              <option value="15000">N15,000 premium sets</option>
             </select>
           </div>
         </div>
       ) : null}
 
       <div className="product-grid">
-        {visibleProducts.map((product) => (
-          <article key={product.slug} className="product-card">
-            <div className="product-image">
-              <span>{product.tag}</span>
-            </div>
-            <div className="product-body">
-              <div className="badge">Only {product.stock} sets remaining</div>
-              <h3>{product.name}</h3>
-              <p className="muted">3 premium boxer briefs | {product.colors.join(" / ")}</p>
-              <div className="price-line">
-                <strong className="price">{formatPrice(product.price)}</strong>
-                <span className="muted">3-pack set</span>
+        {visibleProducts.map((product) => {
+          const isOutOfStock = product.stock === 0;
+
+          return (
+            <article key={product.slug} className="product-card">
+              <div className="product-image">
+                <span>{product.tag}</span>
               </div>
-              <div className="product-actions">
-                <button className="ghost-button" type="button" onClick={() => setModalProduct(product)}>
-                  Quick View
-                </button>
-                <button
-                  className="button-secondary"
-                  type="button"
-                  onClick={() =>
-                    addCartItem({
-                      slug: product.slug,
-                      name: product.name,
-                      price: product.price,
-                      size: "M",
-                      quantity: 1
-                    })
-                  }
-                >
-                  Add to Cart
-                </button>
+              <div className="product-body">
+                <div className={`badge ${isOutOfStock ? "badge-out" : ""}`}>
+                  {isOutOfStock ? "Out of stock" : `Only ${product.stock} sets remaining`}
+                </div>
+                <h3>{product.name}</h3>
+                <p className="muted">3 premium boxer briefs | {product.colors.join(" / ")}</p>
+                <div className="price-line">
+                  <strong className="price">{formatPrice(product.price)}</strong>
+                  <span className="muted">3-pack set</span>
+                </div>
+                <div className="product-actions">
+                  <button className="ghost-button" type="button" onClick={() => setModalProduct(product)}>
+                    Quick View
+                  </button>
+                  <button
+                    className="button-secondary"
+                    type="button"
+                    disabled={isOutOfStock}
+                    onClick={() =>
+                      addCartItem({
+                        slug: product.slug,
+                        name: product.name,
+                        price: product.price,
+                        size: "M",
+                        quantity: 1
+                      })
+                    }
+                  >
+                    {isOutOfStock ? "Sold Out" : "Add to Cart"}
+                  </button>
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
       <QuickViewModal product={modalProduct} onClose={() => setModalProduct(null)} />

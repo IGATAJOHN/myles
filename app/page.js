@@ -2,9 +2,13 @@ import Link from "next/link";
 
 import BrandMark from "@/components/BrandMark";
 import ProductGrid from "@/components/ProductGrid";
-import { products } from "@/data/products";
+import { getInventorySeedCompatibleProducts } from "@/lib/inventory";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const products = await getInventorySeedCompatibleProducts();
+
   return (
     <main>
       <section className="hero">

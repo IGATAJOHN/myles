@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 
 import ProductDetailClient from "@/components/ProductDetailClient";
-import { getProduct } from "@/data/products";
+import { getInventoryProductBySlug } from "@/lib/inventory";
 
-export default function ProductPage({ params }) {
-  const product = getProduct(params.slug);
+export const dynamic = "force-dynamic";
+
+export default async function ProductPage({ params }) {
+  const product = await getInventoryProductBySlug(params.slug);
 
   if (!product) notFound();
 
@@ -43,8 +45,8 @@ export default function ProductPage({ params }) {
             <div className="eyebrow">Build Your Luxe Collection</div>
             <h3>Bundle Offers</h3>
             <ul className="detail-list">
-              <li>Buy 2 sets and save ₦1,000</li>
-              <li>Buy 3 sets and save ₦3,000</li>
+              <li>Buy 2 sets and save N1,000</li>
+              <li>Buy 3 sets and save N3,000</li>
               <li>Perfect for repeat essentials and gifting</li>
             </ul>
           </article>

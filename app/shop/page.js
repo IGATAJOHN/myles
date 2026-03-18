@@ -1,11 +1,15 @@
 import ProductGrid from "@/components/ProductGrid";
-import { products } from "@/data/products";
+import { getInventorySeedCompatibleProducts } from "@/lib/inventory";
 
 export const metadata = {
   title: "Shop | Myles Luxe"
 };
 
-export default function ShopPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ShopPage() {
+  const products = await getInventorySeedCompatibleProducts();
+
   return (
     <main>
       <section className="page-hero">

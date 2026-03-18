@@ -10,11 +10,12 @@ const sizes = ["S", "M", "L", "XL", "XXL"];
 export default function ProductDetailClient({ product }) {
   const [size, setSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
+  const isOutOfStock = product.stock <= 0;
 
   return (
     <div className="sticky-card">
       <div className="about-card">
-        <div className="badge">{product.tag}</div>
+        <div className={`badge ${isOutOfStock ? "badge-out" : ""}`}>{product.tag}</div>
         <h2>{product.name}</h2>
         <p className="section-copy">
           Myles Luxe boxer briefs are designed for men who value comfort, support, and confidence.
@@ -23,7 +24,9 @@ export default function ProductDetailClient({ product }) {
         </p>
         <div className="price-line">
           <strong className="price">{formatPrice(product.price)}</strong>
-          <span className="limited">Only {product.stock} sets remaining</span>
+          <span className="limited">
+            {isOutOfStock ? "Currently out of stock" : `Only ${product.stock} sets remaining`}
+          </span>
         </div>
         <div>
           <strong>Sizes</strong>
@@ -45,14 +48,18 @@ export default function ProductDetailClient({ product }) {
             className="quantity-input"
             type="number"
             min="1"
+            max={Math.max(product.stock, 1)}
             value={quantity}
-            onChange={(event) => setQuantity(Number(event.target.value) || 1)}
+            onChange={(event) =>
+              setQuantity(Math.max(1, Math.min(Number(event.target.value) || 1, Math.max(product.stock, 1))))
+            }
           />
         </div>
         <div className="product-actions">
           <button
             className="button"
             type="button"
+            disabled={isOutOfStock}
             onClick={() =>
               addCartItem({
                 slug: product.slug,
@@ -63,15 +70,20 @@ export default function ProductDetailClient({ product }) {
               })
             }
           >
-            Add to Cart
+            {isOutOfStock ? "Sold Out" : "Add to Cart"}
           </button>
           <a
             className="ghost-button"
-            href={`https://wa.me/2349064372830?text=${encodeURIComponent(
-              `Hello, I want to order the ${product.name}. Size: ${size} Quantity: ${quantity}`
-            )}`}
+            aria-disabled={isOutOfStock}
+            href={
+              isOutOfStock
+                ? "#"
+                : `https://wa.me/2349064372830?text=${encodeURIComponent(
+                    `Hello, I want to order the ${product.name}. Size: ${size} Quantity: ${quantity}`
+                  )}`
+            }
           >
-            Order via WhatsApp
+            {isOutOfStock ? "Unavailable" : "Order via WhatsApp"}
           </a>
         </div>
         <ul className="feature-list">
@@ -87,6 +99,7 @@ export default function ProductDetailClient({ product }) {
             <button
               className="button"
               type="button"
+              disabled={isOutOfStock}
               onClick={() =>
                 addCartItem({
                   slug: product.slug,
@@ -97,7 +110,7 @@ export default function ProductDetailClient({ product }) {
                 })
               }
             >
-              Add to Cart
+              {isOutOfStock ? "Sold Out" : "Add to Cart"}
             </button>
           </div>
         </div>
