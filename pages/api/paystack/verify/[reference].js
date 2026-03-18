@@ -1,23 +1,23 @@
-import { NextResponse } from "next/server";
-
 import { getOrderByReference, markOrderFailed, markOrderPaid, markOrderProcessing } from "@/lib/orders";
 import { verifyPaystackPayment } from "@/lib/payments";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export default async function handler(req, res) {
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET");
+    return res.status(405).json({ message: "Method not allowed." });
+  }
 
-export async function GET(_request, { params }) {
-  const reference = params.reference;
+  const reference = Array.isArray(req.query.reference) ? req.query.reference[0] : req.query.reference;
   const order = await getOrderByReference(reference);
 
   if (!order) {
-    return NextResponse.json({ message: "Order not found." }, { status: 404 });
+    return res.status(404).json({ message: "Order not found." });
   }
 
   const result = await verifyPaystackPayment(reference);
 
   if (!result.ok) {
-    return NextResponse.json({ message: result.message }, { status: result.status || 500 });
+    return res.status(result.status || 500).json({ message: result.message });
   }
 
   if (result.paymentStatus === "success") {
@@ -30,7 +30,7 @@ export async function GET(_request, { params }) {
 
   const updatedOrder = await getOrderByReference(reference);
 
-  return NextResponse.json({
+  return res.status(200).json({
     order: updatedOrder,
     verification: result
   });

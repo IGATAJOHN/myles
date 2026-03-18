@@ -1,25 +1,42 @@
 import crypto from "node:crypto";
 
-import { NextResponse } from "next/server";
 import { decrementStockForOrderItems } from "@/lib/inventory";
 import { getOrderByReference, getOrderItems, markOrderFailed, markOrderPaid } from "@/lib/orders";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+async function readRawBody(req) {
+  const chunks = [];
 
-export async function POST(request) {
+  for await (const chunk of req) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ message: "Method not allowed." });
+  }
+
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
 
   if (!secretKey) {
-    return NextResponse.json({ message: "Missing PAYSTACK_SECRET_KEY." }, { status: 503 });
+    return res.status(503).json({ message: "Missing PAYSTACK_SECRET_KEY." });
   }
 
-  const rawBody = await request.text();
-  const signature = request.headers.get("x-paystack-signature");
+  const rawBody = await readRawBody(req);
+  const signature = req.headers["x-paystack-signature"];
   const expected = crypto.createHmac("sha512", secretKey).update(rawBody).digest("hex");
 
   if (!signature || signature !== expected) {
-    return NextResponse.json({ message: "Invalid Paystack signature." }, { status: 401 });
+    return res.status(401).json({ message: "Invalid Paystack signature." });
   }
 
   const event = JSON.parse(rawBody);
@@ -41,5 +58,5 @@ export async function POST(request) {
     await markOrderFailed(reference);
   }
 
-  return NextResponse.json({ received: true });
+  return res.status(200).json({ received: true });
 }
