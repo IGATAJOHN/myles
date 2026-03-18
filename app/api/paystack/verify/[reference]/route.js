@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { getOrderByReference, markOrderFailed, markOrderPaid, markOrderProcessing } from "@/lib/orders";
 import { verifyPaystackPayment } from "@/lib/payments";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function GET(_request, { params }) {
   const reference = params.reference;
   const order = await getOrderByReference(reference);

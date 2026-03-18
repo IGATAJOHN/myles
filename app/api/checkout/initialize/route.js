@@ -10,6 +10,9 @@ import { validateInventory } from "@/lib/inventory";
 import { createOrder, updateOrderPaymentUrls } from "@/lib/orders";
 import { initializePaystackPayment } from "@/lib/payments";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function POST(request) {
   try {
     const payload = await request.json();

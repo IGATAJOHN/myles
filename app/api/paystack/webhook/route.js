@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { decrementStockForOrderItems } from "@/lib/inventory";
 import { getOrderByReference, getOrderItems, markOrderFailed, markOrderPaid } from "@/lib/orders";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function POST(request) {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
 
