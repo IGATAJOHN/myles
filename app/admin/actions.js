@@ -9,7 +9,7 @@ import { put } from "@vercel/blob";
 import { clearAdminSession, getAdminPassword, setAdminSession } from "@/lib/admin";
 import { updateInventoryProduct } from "@/lib/inventory";
 
-const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+const blobToken = process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
 
 export async function loginAdmin(_previousState, formData) {
   const submitted = String(formData.get("password") || "");
