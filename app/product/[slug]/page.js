@@ -5,8 +5,18 @@ import { getInventoryProductBySlug } from "@/lib/inventory";
 
 export const dynamic = "force-dynamic";
 
+function readParamValue(value) {
+  if (Array.isArray(value)) {
+    return value[0] || "";
+  }
+
+  return value || "";
+}
+
 export default async function ProductPage({ params }) {
-  const product = await getInventoryProductBySlug(params.slug);
+  const resolvedParams = await params;
+  const slug = readParamValue(resolvedParams?.slug);
+  const product = await getInventoryProductBySlug(slug);
 
   if (!product) notFound();
 
