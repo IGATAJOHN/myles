@@ -9,8 +9,17 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 
+function readQueryValue(value) {
+  if (Array.isArray(value)) {
+    return value[0] || "";
+  }
+
+  return value || "";
+}
+
 export default async function ConfirmationPage({ searchParams }) {
-  const reference = searchParams?.reference || "";
+  const resolvedSearchParams = await searchParams;
+  const reference = readQueryValue(resolvedSearchParams?.reference);
   let order = await getOrderByReference(reference);
 
   if (reference && order?.paymentProvider === "paystack" && order.paymentStatus !== "paid") {
