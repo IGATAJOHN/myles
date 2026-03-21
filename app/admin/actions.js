@@ -84,6 +84,11 @@ export async function updateProductInventory(_previousState, formData) {
     return { success: "Product updated." };
   } catch (error) {
     console.error("Product update failed:", error);
-    return { error: "Could not update this product right now." };
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Could not update this product right now.";
+
+    return { error: message };
   }
 }
