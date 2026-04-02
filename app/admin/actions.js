@@ -8,6 +8,7 @@ import { put } from "@vercel/blob";
 
 import { clearAdminSession, getAdminPassword, setAdminSession } from "@/lib/admin";
 import {
+  createInventoryProduct,
   createProductVariant,
   deleteProductVariant,
   updateInventoryProduct,
@@ -73,6 +74,58 @@ export async function deleteVariantAction(formData) {
   revalidatePath("/shop");
   revalidatePath("/admin/orders");
   revalidatePath("/product");
+}
+
+export async function createProductAction(_previousState, formData) {
+  try {
+    const name = String(formData.get("name") || "").trim();
+    const slug = String(formData.get("slug") || "").trim().toLowerCase();
+    const tag = String(formData.get("tag") || "").trim();
+    const colors = String(formData.get("colors") || "").trim();
+    const price = Number(formData.get("price") || 0);
+    const stock = Number(formData.get("stock") || 0);
+    const variantLabel = String(formData.get("variantLabel") || "").trim();
+    const variantColor = String(formData.get("variantColor") || "").trim();
+    const active = String(formData.get("active") || "") === "on";
+    const image = formData.get("image");
+
+    if (!name || !slug) {
+      return { error: "Product name and slug are required." };
+    }
+
+    const payload = {
+      name,
+      slug,
+      tag,
+      colors,
+      price: Math.max(0, price),
+      stock: Math.max(0, stock),
+      variantLabel,
+      variantColor,
+      active
+    };
+
+    if (image && typeof image === "object" && "size" in image && image.size > 0) {
+      payload.imageUrl = await uploadAsset(image, "products");
+    }
+
+    await createInventoryProduct(payload);
+
+    revalidatePath("/");
+    revalidatePath("/shop");
+    revalidatePath("/admin/orders");
+    revalidatePath("/product");
+
+    return { success: "Product created." };
+  } catch (error) {
+    console.error("Product creation failed:", error);
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Could not create this product right now.";
+
+    return { error: message };
+  }
 }
 
 export async function updateProductInventory(_previousState, formData) {

@@ -1,4 +1,5 @@
 import { logoutAdmin } from "@/app/admin/actions";
+import AdminCreateProductForm from "@/components/AdminCreateProductForm";
 import AdminProductForm from "@/components/AdminProductForm";
 import { formatPrice } from "@/data/products";
 import { getInventoryProducts } from "@/lib/inventory";
@@ -47,19 +48,32 @@ export default async function AdminOrdersPage() {
         <div className="container admin-orders">
           {loadError ? <p className="form-error">{loadError}</p> : null}
           {!loadError ? (
-            <article className="about-card">
-              <div className="admin-order-head">
-                <div>
-                  <strong>Inventory Snapshot</strong>
-                  <p className="muted">Current sellable stock and product assets from the live database.</p>
+            <>
+              <article className="about-card">
+                <div className="admin-order-head">
+                  <div>
+                    <strong>Catalog Builder</strong>
+                    <p className="muted">Create new product types like singlets, then manage their varieties and assets.</p>
+                  </div>
                 </div>
-              </div>
-              <div className="inventory-grid">
-                {inventory.map((product) => (
-                  <AdminProductForm key={product.id} product={product} />
-                ))}
-              </div>
-            </article>
+                <div className="inventory-create-grid">
+                  <AdminCreateProductForm />
+                </div>
+              </article>
+              <article className="about-card">
+                <div className="admin-order-head">
+                  <div>
+                    <strong>Inventory Snapshot</strong>
+                    <p className="muted">Current sellable stock and product assets from the live database.</p>
+                  </div>
+                </div>
+                <div className="inventory-grid">
+                  {inventory.map((product) => (
+                    <AdminProductForm key={product.id} product={product} />
+                  ))}
+                </div>
+              </article>
+            </>
           ) : null}
           {orders.length ? (
             orders.map((order) => (
