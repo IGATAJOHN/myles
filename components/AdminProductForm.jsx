@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { updateProductInventory } from "@/app/admin/actions";
 
@@ -11,9 +11,27 @@ const initialState = {
 
 export default function AdminProductForm({ product }) {
   const [state, action, pending] = useActionState(updateProductInventory, initialState);
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    if (!state?.success || !formRef.current) return;
+
+    for (const fieldName of [
+      "newVariantLabel",
+      "newVariantColor",
+      "newVariantPrice",
+      "newVariantStock",
+      "newVariantImage"
+    ]) {
+      const field = formRef.current.elements.namedItem(fieldName);
+      if (field && "value" in field) {
+        field.value = "";
+      }
+    }
+  }, [state]);
 
   return (
-    <form className="inventory-form" action={action}>
+    <form ref={formRef} className="inventory-form" action={action}>
       <input type="hidden" name="id" value={product.id} />
       <div className="inventory-card">
         <strong>{product.name}</strong>
@@ -51,7 +69,11 @@ export default function AdminProductForm({ product }) {
                 <div className="inventory-image-preview variant-preview">
                   <img src={variant.imageUrl} alt={`${product.name} ${variant.label}`} />
                 </div>
-              ) : null}
+              ) : (
+                <div className="inventory-image-preview inventory-image-empty variant-preview">
+                  No variant asset uploaded
+                </div>
+              )}
               <label className="inventory-field">
                 <span>Label</span>
                 <input type="text" name="variantLabel" defaultValue={variant.label} />
@@ -77,6 +99,9 @@ export default function AdminProductForm({ product }) {
 
           <div className="variant-admin-card variant-admin-card-new">
             <strong>Add New Variety</strong>
+            <p className="muted variant-helper">
+              Save once to create it. These fields clear automatically after a successful save.
+            </p>
             <label className="inventory-field">
               <span>Label</span>
               <input type="text" name="newVariantLabel" placeholder="Example: Gold Waistband" />
