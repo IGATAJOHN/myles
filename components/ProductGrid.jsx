@@ -10,6 +10,7 @@ function QuickViewModal({ product, onClose }) {
   if (!product) return null;
 
   const isOutOfStock = product.stock === 0;
+  const defaultVariant = product.variants?.find((variant) => variant.id === product.defaultVariantId) || product.variants?.[0];
 
   return (
     <div className="modal open" onClick={onClose}>
@@ -45,6 +46,8 @@ function QuickViewModal({ product, onClose }) {
                 onClick={() =>
                   addCartItem({
                     slug: product.slug,
+                    variantId: defaultVariant?.id || null,
+                    variantLabel: defaultVariant?.label || "",
                     name: product.name,
                     price: product.price,
                     size: "M",
@@ -139,6 +142,11 @@ export default function ProductGrid({ products, enableFilters = false }) {
                     onClick={() =>
                       addCartItem({
                         slug: product.slug,
+                        variantId: product.defaultVariantId || product.variants?.[0]?.id || null,
+                        variantLabel:
+                          product.variants?.find((variant) => variant.id === product.defaultVariantId)?.label ||
+                          product.variants?.[0]?.label ||
+                          "",
                         name: product.name,
                         price: product.price,
                         size: "M",

@@ -195,11 +195,14 @@ export default function CheckoutPageClient() {
           {cart.length ? (
             <div className="summary-stack">
               {cart.map((item) => (
-                <div key={`${item.slug}-${item.size}`} className="summary-line">
+                <div key={`${item.slug}-${item.variantId || "default"}-${item.size}`} className="summary-line">
                   <span>
                     {item.name}
                     <br />
-                    <span className="muted">Size {item.size} x {item.quantity}</span>
+                    <span className="muted">
+                      {item.variantLabel ? `${item.variantLabel} | ` : ""}
+                      Size {item.size} x {item.quantity}
+                    </span>
                   </span>
                   <strong>{formatPrice(item.price * item.quantity)}</strong>
                 </div>

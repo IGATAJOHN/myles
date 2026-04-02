@@ -39,11 +39,14 @@ export default function CartPageClient() {
               </thead>
               <tbody>
                 {cart.map((item) => (
-                  <tr key={`${item.slug}-${item.size}`}>
+                  <tr key={`${item.slug}-${item.variantId || "default"}-${item.size}`}>
                     <td>
                       {item.name}
                       <br />
-                      <span className="muted">Size {item.size}</span>
+                      <span className="muted">
+                        {item.variantLabel ? `${item.variantLabel} | ` : ""}
+                        Size {item.size}
+                      </span>
                     </td>
                     <td>{item.quantity}</td>
                     <td>{formatPrice(item.price)}</td>

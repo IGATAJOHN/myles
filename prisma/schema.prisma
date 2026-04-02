@@ -8,17 +8,33 @@ datasource db {
 }
 
 model Product {
-  id        String      @id @default(cuid())
-  slug      String      @unique
+  id        String           @id @default(cuid())
+  slug      String           @unique
   name      String
   price     Int
   colors    String[]
   tag       String
   imageUrl  String?
   stock     Int
-  active    Boolean     @default(true)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  active    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  variants  ProductVariant[]
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  label     String
+  color     String?
+  price     Int
+  stock     Int
+  imageUrl  String?
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -45,13 +61,15 @@ model Order {
 }
 
 model OrderItem {
-  id        String @id @default(cuid())
-  orderId   String
-  productId String
-  name      String
-  size      String
-  quantity  Int
-  unitPrice Int
-  total     Int
-  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id           String  @id @default(cuid())
+  orderId      String
+  productId    String
+  variantId    String?
+  variantLabel String?
+  name         String
+  size         String
+  quantity     Int
+  unitPrice    Int
+  total        Int
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

@@ -7,9 +7,32 @@ import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
 
 import { clearAdminSession, getAdminPassword, setAdminSession } from "@/lib/admin";
-import { updateInventoryProduct } from "@/lib/inventory";
+import { createProductVariant, updateInventoryProduct, updateProductVariant } from "@/lib/inventory";
 
 const blobToken = process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
+
+async function uploadAsset(image, folder = "products") {
+  const safeName = String(image.name || "asset.jpg").replace(/[^a-zA-Z0-9.-]/g, "-");
+  const fileName = `${Date.now()}-${safeName}`;
+
+  if (blobToken) {
+    const blob = await put(`${folder}/${fileName}`, image, {
+      access: "public",
+      token: blobToken
+    });
+
+    return blob.url;
+  }
+
+  const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
+  await mkdir(uploadDir, { recursive: true });
+
+  const filePath = path.join(uploadDir, fileName);
+  const bytes = Buffer.from(await image.arrayBuffer());
+
+  await writeFile(filePath, bytes);
+  return `/uploads/${folder}/${fileName}`;
+}
 
 export async function loginAdmin(_previousState, formData) {
   const submitted = String(formData.get("password") || "");
@@ -35,7 +58,6 @@ export async function logoutAdmin() {
 export async function updateProductInventory(_previousState, formData) {
   try {
     const id = String(formData.get("id") || "");
-    const stock = Number(formData.get("stock") || 0);
     const price = Number(formData.get("price") || 0);
     const tag = String(formData.get("tag") || "");
     const active = String(formData.get("active") || "") === "on";
@@ -46,36 +68,66 @@ export async function updateProductInventory(_previousState, formData) {
     }
 
     const update = {
-      stock: Math.max(0, stock),
       price: Math.max(0, price),
       tag,
       active
     };
 
     if (image && typeof image === "object" && "size" in image && image.size > 0) {
-      const safeName = String(image.name || "asset.jpg").replace(/[^a-zA-Z0-9.-]/g, "-");
-      const fileName = `${Date.now()}-${safeName}`;
-
-      if (blobToken) {
-        const blob = await put(`products/${fileName}`, image, {
-          access: "public",
-          token: blobToken
-        });
-
-        update.imageUrl = blob.url;
-      } else {
-        const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
-        await mkdir(uploadDir, { recursive: true });
-
-        const filePath = path.join(uploadDir, fileName);
-        const bytes = Buffer.from(await image.arrayBuffer());
-
-        await writeFile(filePath, bytes);
-        update.imageUrl = `/uploads/products/${fileName}`;
-      }
+      update.imageUrl = await uploadAsset(image, "products");
     }
 
     await updateInventoryProduct(id, update);
+
+    const variantIds = formData.getAll("variantId").map((value) => String(value || ""));
+    const variantLabels = formData.getAll("variantLabel").map((value) => String(value || ""));
+    const variantColors = formData.getAll("variantColor").map((value) => String(value || ""));
+    const variantPrices = formData.getAll("variantPrice").map((value) => Number(value || 0));
+    const variantStocks = formData.getAll("variantStock").map((value) => Number(value || 0));
+    const variantImages = formData.getAll("variantImage");
+
+    for (let index = 0; index < variantIds.length; index += 1) {
+      const variantUpdate = {
+        label: variantLabels[index] || `Variant ${index + 1}`,
+        color: variantColors[index] || "",
+        price: Math.max(0, variantPrices[index] || 0),
+        stock: Math.max(0, variantStocks[index] || 0)
+      };
+
+      const variantImage = variantImages[index];
+      if (variantImage && typeof variantImage === "object" && "size" in variantImage && variantImage.size > 0) {
+        variantUpdate.imageUrl = await uploadAsset(variantImage, "variants");
+      }
+
+      await updateProductVariant(variantIds[index], variantUpdate);
+    }
+
+    const newVariantLabel = String(formData.get("newVariantLabel") || "").trim();
+    const newVariantColor = String(formData.get("newVariantColor") || "").trim();
+    const newVariantPrice = Number(formData.get("newVariantPrice") || 0);
+    const newVariantStock = Number(formData.get("newVariantStock") || 0);
+    const newVariantImage = formData.get("newVariantImage");
+
+    if (newVariantLabel) {
+      const newVariantData = {
+        label: newVariantLabel,
+        color: newVariantColor,
+        price: Math.max(0, newVariantPrice),
+        stock: Math.max(0, newVariantStock)
+      };
+
+      if (
+        newVariantImage &&
+        typeof newVariantImage === "object" &&
+        "size" in newVariantImage &&
+        newVariantImage.size > 0
+      ) {
+        newVariantData.imageUrl = await uploadAsset(newVariantImage, "variants");
+      }
+
+      await createProductVariant(id, newVariantData);
+    }
+
     revalidatePath("/");
     revalidatePath("/shop");
     revalidatePath("/admin/orders");

@@ -113,7 +113,9 @@ export default async function AdminOrdersPage() {
                 <ul className="detail-list">
                   {order.items.map((item) => (
                     <li key={item.id}>
-                      {item.name} | Size {item.size} | Qty {item.quantity} | {formatPrice(item.total)}
+                      {item.name}
+                      {item.variantLabel ? ` | ${item.variantLabel}` : ""}
+                      {" | "}Size {item.size} | Qty {item.quantity} | {formatPrice(item.total)}
                     </li>
                   ))}
                 </ul>
