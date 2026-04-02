@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 
-import { updateProductInventory } from "@/app/admin/actions";
+import { deleteVariantAction, updateProductInventory } from "@/app/admin/actions";
 
 const initialState = {
   error: "",
@@ -97,6 +97,7 @@ export default function AdminProductForm({ product }) {
               <button
                 className="ghost-button variant-delete-button"
                 type="submit"
+                formAction={deleteVariantAction}
                 name="deleteVariantId"
                 value={variant.id}
                 disabled={pending}

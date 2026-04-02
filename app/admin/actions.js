@@ -60,10 +60,24 @@ export async function logoutAdmin() {
   redirect("/admin");
 }
 
+export async function deleteVariantAction(formData) {
+  const deleteVariantId = String(formData.get("deleteVariantId") || "");
+
+  if (!deleteVariantId) {
+    return;
+  }
+
+  await deleteProductVariant(deleteVariantId);
+
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath("/admin/orders");
+  revalidatePath("/product");
+}
+
 export async function updateProductInventory(_previousState, formData) {
   try {
     const id = String(formData.get("id") || "");
-    const deleteVariantId = String(formData.get("deleteVariantId") || "");
     const price = Number(formData.get("price") || 0);
     const tag = String(formData.get("tag") || "");
     const active = String(formData.get("active") || "") === "on";
@@ -71,17 +85,6 @@ export async function updateProductInventory(_previousState, formData) {
 
     if (!id) {
       return { error: "Missing product id." };
-    }
-
-    if (deleteVariantId) {
-      await deleteProductVariant(deleteVariantId);
-
-      revalidatePath("/");
-      revalidatePath("/shop");
-      revalidatePath("/admin/orders");
-      revalidatePath("/product");
-
-      return { success: "Variant deleted." };
     }
 
     const update = {
