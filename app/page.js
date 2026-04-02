@@ -39,10 +39,15 @@ export default async function HomePage() {
           </div>
           <div className="hero-card">
             <div className="hero-card-content">
+              <div className="hero-card-stage">
+                <div className="hero-stage-badge">First Drop</div>
+                <div className="hero-stage-wordmark">Myles Luxe</div>
+                <p className="muted">Luxury essentials built for comfort, confidence, and everyday premium wear.</p>
+              </div>
               <div className="hero-card-panel">
-                <div className="eyebrow">First Drop Collection</div>
+                <div className="eyebrow">Collection Snapshot</div>
                 <strong>8 Exclusive Designs</strong>
-                <p className="muted">Limited availability with premium black-and-gold brand presentation.</p>
+                <p className="muted">Premium black-and-gold presentation with live inventory and direct checkout.</p>
               </div>
             </div>
           </div>

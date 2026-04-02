@@ -95,11 +95,40 @@ button, input, select, textarea { font: inherit; }
 .hero-card::before {
   content: ""; position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.8)),
-    url("https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=1200&q=80") center/cover;
-  opacity: 0.86;
+    radial-gradient(circle at 50% 28%, rgba(240, 207, 115, 0.24), transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(199, 165, 75, 0.22), transparent 28%),
+    linear-gradient(180deg, rgba(15,15,15,0.7), rgba(5,5,5,0.94)),
+    linear-gradient(145deg, rgba(199,165,75,0.12), rgba(255,255,255,0.02));
+  opacity: 1;
 }
 .hero-card-content { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; }
+.hero-card-stage {
+  flex: 1;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 16px;
+  padding: 32px;
+}
+.hero-stage-badge {
+  display: inline-flex;
+  justify-self: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(199,165,75,0.24);
+  background: rgba(199,165,75,0.08);
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+.hero-stage-wordmark {
+  font-size: clamp(2rem, 4vw, 3.7rem);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #f3d57f;
+  text-shadow: 0 10px 40px rgba(199,165,75,0.18);
+}
 .hero-card-panel { padding: 22px; width: min(100%, 340px); background: rgba(12,12,12,0.78); }
 .section { padding: 28px 0 60px; }
 .section-title, .section-headline { margin: 0 0 12px; font-size: clamp(1.8rem, 4vw, 3rem); }
