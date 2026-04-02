@@ -76,7 +76,7 @@ export async function deleteVariantAction(formData) {
   revalidatePath("/product");
 }
 
-export async function createProductAction(_previousState, formData) {
+async function createProductFromFormData(formData) {
   try {
     const name = String(formData.get("name") || "").trim();
     const slug = String(formData.get("slug") || "").trim().toLowerCase();
@@ -126,6 +126,14 @@ export async function createProductAction(_previousState, formData) {
 
     return { error: message };
   }
+}
+
+export async function createProductDirectAction(formData) {
+  return createProductFromFormData(formData);
+}
+
+export async function createProductAction(_previousState, formData) {
+  return createProductFromFormData(formData);
 }
 
 export async function updateProductInventory(_previousState, formData) {

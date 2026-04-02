@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
-import { createProductAction } from "@/app/admin/actions";
+import { createProductDirectAction } from "@/app/admin/actions";
 
 const initialState = {
   error: "",
@@ -10,16 +11,36 @@ const initialState = {
 };
 
 export default function AdminCreateProductForm() {
-  const [state, action, pending] = useActionState(createProductAction, initialState);
+  const [state, setState] = useState(initialState);
+  const [pending, startTransition] = useTransition();
   const formRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!state?.success || !formRef.current) return;
     formRef.current.reset();
   }, [state]);
 
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    startTransition(async () => {
+      const result = await createProductDirectAction(formData);
+      setState({
+        error: result?.error || "",
+        success: result?.success || ""
+      });
+
+      if (result?.success) {
+        router.refresh();
+      }
+    });
+  }
+
   return (
-    <form ref={formRef} className="inventory-form" action={action}>
+    <form ref={formRef} className="inventory-form" onSubmit={handleSubmit}>
       <div className="inventory-card create-product-card">
         <strong>Create New Product</strong>
         <p className="muted">Add a new product type like singlets, then manage its varieties below.</p>
