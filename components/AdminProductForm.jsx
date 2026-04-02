@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 import { deleteVariantAction, updateProductInventory } from "@/app/admin/actions";
 
@@ -12,6 +13,8 @@ const initialState = {
 export default function AdminProductForm({ product }) {
   const [state, action, pending] = useActionState(updateProductInventory, initialState);
   const formRef = useRef(null);
+  const router = useRouter();
+  const [isDeleting, startDeleteTransition] = useTransition();
 
   useEffect(() => {
     if (!state?.success || !formRef.current) return;
@@ -29,6 +32,15 @@ export default function AdminProductForm({ product }) {
       }
     }
   }, [state]);
+
+  function handleDeleteVariant(variantId) {
+    startDeleteTransition(async () => {
+      const formData = new FormData();
+      formData.set("deleteVariantId", variantId);
+      await deleteVariantAction(formData);
+      router.refresh();
+    });
+  }
 
   return (
     <form ref={formRef} className="inventory-form" action={action}>
@@ -96,13 +108,11 @@ export default function AdminProductForm({ product }) {
               </label>
               <button
                 className="ghost-button variant-delete-button"
-                type="submit"
-                formAction={deleteVariantAction}
-                name="deleteVariantId"
-                value={variant.id}
-                disabled={pending}
+                type="button"
+                disabled={pending || isDeleting}
+                onClick={() => handleDeleteVariant(variant.id)}
               >
-                Delete Variety
+                {isDeleting ? "Deleting..." : "Delete Variety"}
               </button>
             </div>
           ))}
