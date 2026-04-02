@@ -7,7 +7,12 @@ import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
 
 import { clearAdminSession, getAdminPassword, setAdminSession } from "@/lib/admin";
-import { createProductVariant, updateInventoryProduct, updateProductVariant } from "@/lib/inventory";
+import {
+  createProductVariant,
+  deleteProductVariant,
+  updateInventoryProduct,
+  updateProductVariant
+} from "@/lib/inventory";
 
 const blobToken = process.env.PUBLIC_BLOB_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
 
@@ -58,6 +63,7 @@ export async function logoutAdmin() {
 export async function updateProductInventory(_previousState, formData) {
   try {
     const id = String(formData.get("id") || "");
+    const deleteVariantId = String(formData.get("deleteVariantId") || "");
     const price = Number(formData.get("price") || 0);
     const tag = String(formData.get("tag") || "");
     const active = String(formData.get("active") || "") === "on";
@@ -65,6 +71,17 @@ export async function updateProductInventory(_previousState, formData) {
 
     if (!id) {
       return { error: "Missing product id." };
+    }
+
+    if (deleteVariantId) {
+      await deleteProductVariant(deleteVariantId);
+
+      revalidatePath("/");
+      revalidatePath("/shop");
+      revalidatePath("/admin/orders");
+      revalidatePath("/product");
+
+      return { success: "Variant deleted." };
     }
 
     const update = {

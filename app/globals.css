@@ -201,6 +201,7 @@ button, input, select, textarea { font: inherit; }
   border: 1px solid rgba(255,255,255,0.08);
 }
 .variant-admin-card-new { border-style: dashed; }
+.variant-delete-button { margin-top: 12px; width: 100%; }
 .variant-preview { min-height: 120px; margin-bottom: 10px; }
 .variant-helper { margin: 6px 0 0; }
 .inventory-field { display: grid; gap: 6px; margin-top: 10px; }

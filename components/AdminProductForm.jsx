@@ -94,6 +94,15 @@ export default function AdminProductForm({ product }) {
                 <span>Variant Asset Upload</span>
                 <input type="file" name="variantImage" accept="image/*" />
               </label>
+              <button
+                className="ghost-button variant-delete-button"
+                type="submit"
+                name="deleteVariantId"
+                value={variant.id}
+                disabled={pending}
+              >
+                Delete Variety
+              </button>
             </div>
           ))}
 
