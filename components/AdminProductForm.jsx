@@ -63,7 +63,26 @@ export default function AdminProductForm({ product }) {
       <div className="inventory-card">
         <div className="inventory-card-header">
           <strong>{product.name}</strong>
-          <span className="inventory-current-price">₦{Number(product.price).toLocaleString()}</span>
+          <div className="price-input-wrapper" style={{ width: "140px", marginTop: "0" }}>
+            <span className="price-input-prefix">₦</span>
+            <input
+              type="number"
+              name="price"
+              min="0"
+              step="500"
+              defaultValue={product.price}
+              className="price-input"
+              onChange={handleBasePriceChange}
+              style={{
+                paddingTop: "8px",
+                paddingBottom: "8px",
+                borderRadius: "999px",
+                background: "rgba(199,165,75,0.12)",
+                borderColor: "rgba(199,165,75,0.25)"
+              }}
+              aria-label="Base Price"
+            />
+          </div>
         </div>
         <p className="muted">{product.slug}</p>
         {product.imageUrl ? (
@@ -76,21 +95,6 @@ export default function AdminProductForm({ product }) {
         <label className="inventory-field">
           <span>Product Name</span>
           <input type="text" name="name" defaultValue={product.name} />
-        </label>
-        <label className="inventory-field">
-          <span>Base Price (₦)</span>
-          <div className="price-input-wrapper">
-            <span className="price-input-prefix">₦</span>
-            <input
-              type="number"
-              name="price"
-              min="0"
-              step="500"
-              defaultValue={product.price}
-              className="price-input"
-              onChange={handleBasePriceChange}
-            />
-          </div>
         </label>
         <label className="inventory-field">
           <span>Tag</span>
