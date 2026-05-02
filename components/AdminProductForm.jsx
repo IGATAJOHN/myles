@@ -63,25 +63,30 @@ export default function AdminProductForm({ product }) {
       <div className="inventory-card">
         <div className="inventory-card-header">
           <strong>{product.name}</strong>
-          <div className="price-input-wrapper" style={{ width: "140px", marginTop: "0" }}>
-            <span className="price-input-prefix">₦</span>
-            <input
-              type="number"
-              name="price"
-              min="0"
-              step="500"
-              defaultValue={product.price}
-              className="price-input"
-              onChange={handleBasePriceChange}
-              style={{
-                paddingTop: "8px",
-                paddingBottom: "8px",
-                borderRadius: "999px",
-                background: "rgba(199,165,75,0.12)",
-                borderColor: "rgba(199,165,75,0.25)"
-              }}
-              aria-label="Base Price"
-            />
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div className="price-input-wrapper" style={{ width: "140px", marginTop: "0" }}>
+              <span className="price-input-prefix">₦</span>
+              <input
+                type="number"
+                name="price"
+                min="0"
+                step="500"
+                defaultValue={product.price}
+                className="price-input"
+                onChange={handleBasePriceChange}
+                style={{
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                  borderRadius: "999px",
+                  background: "rgba(199,165,75,0.12)",
+                  borderColor: "rgba(199,165,75,0.25)"
+                }}
+                aria-label="Base Price"
+              />
+            </div>
+            <button className="button" type="submit" disabled={pending} style={{ minHeight: "40px", padding: "0 18px", fontSize: "0.9rem" }}>
+              {pending ? "Saving..." : "Save"}
+            </button>
           </div>
         </div>
         <p className="muted">{product.slug}</p>
