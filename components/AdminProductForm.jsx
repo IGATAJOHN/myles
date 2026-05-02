@@ -33,6 +33,21 @@ export default function AdminProductForm({ product }) {
     }
   }, [state]);
 
+  function handleBasePriceChange(event) {
+    const newPrice = event.target.value;
+    if (!formRef.current) return;
+
+    const variantInputs = formRef.current.querySelectorAll('input[name="variantPrice"]');
+    variantInputs.forEach((input) => {
+      input.value = newPrice;
+    });
+
+    const newVariantInput = formRef.current.querySelector('input[name="newVariantPrice"]');
+    if (newVariantInput) {
+      newVariantInput.value = newPrice;
+    }
+  }
+
   function handleDeleteVariant(variantId) {
     startDeleteTransition(async () => {
       const formData = new FormData();
@@ -66,7 +81,15 @@ export default function AdminProductForm({ product }) {
           <span>Base Price (₦)</span>
           <div className="price-input-wrapper">
             <span className="price-input-prefix">₦</span>
-            <input type="number" name="price" min="0" step="500" defaultValue={product.price} className="price-input" />
+            <input
+              type="number"
+              name="price"
+              min="0"
+              step="500"
+              defaultValue={product.price}
+              className="price-input"
+              onChange={handleBasePriceChange}
+            />
           </div>
         </label>
         <label className="inventory-field">
