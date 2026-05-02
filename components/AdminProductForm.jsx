@@ -46,7 +46,10 @@ export default function AdminProductForm({ product }) {
     <form ref={formRef} className="inventory-form" action={action}>
       <input type="hidden" name="id" value={product.id} />
       <div className="inventory-card">
-        <strong>{product.name}</strong>
+        <div className="inventory-card-header">
+          <strong>{product.name}</strong>
+          <span className="inventory-current-price">₦{Number(product.price).toLocaleString()}</span>
+        </div>
         <p className="muted">{product.slug}</p>
         {product.imageUrl ? (
           <div className="inventory-image-preview">
@@ -56,8 +59,15 @@ export default function AdminProductForm({ product }) {
           <div className="inventory-image-preview inventory-image-empty">No default asset uploaded</div>
         )}
         <label className="inventory-field">
-          <span>Base Price</span>
-          <input type="number" name="price" min="0" defaultValue={product.price} />
+          <span>Product Name</span>
+          <input type="text" name="name" defaultValue={product.name} />
+        </label>
+        <label className="inventory-field">
+          <span>Base Price (₦)</span>
+          <div className="price-input-wrapper">
+            <span className="price-input-prefix">₦</span>
+            <input type="number" name="price" min="0" step="500" defaultValue={product.price} className="price-input" />
+          </div>
         </label>
         <label className="inventory-field">
           <span>Tag</span>
@@ -95,8 +105,11 @@ export default function AdminProductForm({ product }) {
                 <input type="text" name="variantColor" defaultValue={variant.color || ""} />
               </label>
               <label className="inventory-field">
-                <span>Price</span>
-                <input type="number" name="variantPrice" min="0" defaultValue={variant.price} />
+                <span>Variant Price (₦)</span>
+                <div className="price-input-wrapper">
+                  <span className="price-input-prefix">₦</span>
+                  <input type="number" name="variantPrice" min="0" step="500" defaultValue={variant.price} className="price-input" />
+                </div>
               </label>
               <label className="inventory-field">
                 <span>Stock</span>
@@ -131,8 +144,11 @@ export default function AdminProductForm({ product }) {
               <input type="text" name="newVariantColor" placeholder="Example: Gold" />
             </label>
             <label className="inventory-field">
-              <span>Price</span>
-              <input type="number" name="newVariantPrice" min="0" placeholder="12000" />
+              <span>Price (₦)</span>
+              <div className="price-input-wrapper">
+                <span className="price-input-prefix">₦</span>
+                <input type="number" name="newVariantPrice" min="0" step="500" placeholder="12000" className="price-input" />
+              </div>
             </label>
             <label className="inventory-field">
               <span>Stock</span>

@@ -139,6 +139,7 @@ export async function createProductAction(_previousState, formData) {
 export async function updateProductInventory(_previousState, formData) {
   try {
     const id = String(formData.get("id") || "");
+    const name = String(formData.get("name") || "").trim();
     const price = Number(formData.get("price") || 0);
     const tag = String(formData.get("tag") || "");
     const active = String(formData.get("active") || "") === "on";
@@ -153,6 +154,10 @@ export async function updateProductInventory(_previousState, formData) {
       tag,
       active
     };
+
+    if (name) {
+      update.name = name;
+    }
 
     if (image && typeof image === "object" && "size" in image && image.size > 0) {
       update.imageUrl = await uploadAsset(image, "products");
