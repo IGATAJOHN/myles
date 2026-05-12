@@ -15,7 +15,7 @@ export default function SiteFooter() {
           <p className="muted">Payments, inventory, shipping rules, analytics, and admin management.</p>
         </div>
       </div>
-      <div className="container footer-note">Next.js storefront starter based on the MYLES LUXE website development brief.</div>
+      <div className="container footer-note">&copy; {new Date().getFullYear()} Myles Luxe. All rights reserved.</div>
     </footer>
   );
 }

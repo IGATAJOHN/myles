@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { formatPrice } from "@/data/products";
-import { readCart } from "@/lib/cart";
+import { readCart, removeCartItem } from "@/lib/cart";
 
 export default function CartPageClient() {
   const [cart, setCart] = useState([]);
@@ -35,6 +35,7 @@ export default function CartPageClient() {
                   <th>Qty</th>
                   <th>Price</th>
                   <th>Total</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -51,6 +52,15 @@ export default function CartPageClient() {
                     <td>{item.quantity}</td>
                     <td>{formatPrice(item.price)}</td>
                     <td>{formatPrice(item.price * item.quantity)}</td>
+                    <td>
+                      <button
+                        className="text-button"
+                        onClick={() => removeCartItem(item)}
+                        style={{ color: "#ff8b8b", fontSize: "0.82rem", fontWeight: "600" }}
+                      >
+                        Remove Item
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

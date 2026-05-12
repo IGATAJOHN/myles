@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 
 import { nigeriaStates } from "@/data/locations";
 import { formatPrice } from "@/data/products";
-import { readCart } from "@/lib/cart";
+import { readCart, removeCartItem } from "@/lib/cart";
 
 const initialForm = {
   name: "",
@@ -205,6 +205,14 @@ export default function CheckoutPageClient() {
                     </span>
                   </span>
                   <strong>{formatPrice(item.price * item.quantity)}</strong>
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() => removeCartItem(item)}
+                    style={{ color: "#ff8b8b", fontSize: "0.78rem", fontWeight: "600", display: "block", marginLeft: "auto", marginTop: "4px" }}
+                  >
+                    Remove Item
+                  </button>
                 </div>
               ))}
             </div>
